@@ -89,7 +89,6 @@ const Sidebar = () => {
                 className='w-5 h-5 cursor-pointer'
                 onClick={(e) => {
                   e.preventDefault;
-                  console.log("Hello from logout");
                   logout();
                 }}
               />
