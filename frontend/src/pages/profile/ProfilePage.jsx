@@ -13,10 +13,12 @@ import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
+import useFollow from "../../hooks/useFollow";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 const ProfilePage = () => {
-  // const { data: authUser } = useQuery({ queryKey: ["authUser"] });
-
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { follow, isPending } = useFollow();
   const [coverImg, setCoverImg] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
   const [feedType, setFeedType] = useState("posts");
@@ -24,7 +26,6 @@ const ProfilePage = () => {
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
 
-  const isMyProfile = true;
   const { username } = useParams();
   const {
     data: user,
@@ -47,8 +48,12 @@ const ProfilePage = () => {
       }
     },
   });
-  const memberSinceDate = formatMemberSinceDate(user?.createdAt);
 
+  const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
+  const isMyProfile = authUser._id === user?._id;
+
+  const memberSinceDate = formatMemberSinceDate(user?.createdAt);
+  const amIFollowing = authUser?.following.includes(user?._id);
   const handleImgChange = (e, state) => {
     const file = e.target.files[0];
     if (file) {
@@ -136,19 +141,25 @@ const ProfilePage = () => {
                 </div>
               </div>
               <div className='flex justify-end px-4 mt-5'>
-                {isMyProfile && <EditProfileModal />}
+                {isMyProfile && <EditProfileModal authUser={authUser} />}
                 {!isMyProfile && (
                   <button
                     className='btn btn-outline rounded-full btn-sm'
-                    onClick={() => alert("Followed successfully")}>
-                    Follow
+                    onClick={() => follow(user?._id)}>
+                    {isPending && "Loading..."}
+                    {!isPending && amIFollowing && "Unfollow"}
+                    {!isPending && !amIFollowing && "Follow"}
                   </button>
                 )}
                 {(coverImg || profileImg) && (
                   <button
                     className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-                    onClick={() => alert("Profile updated successfully")}>
-                    Update
+                    onClick={async () => {
+                      await updateProfile({ coverImg, profileImg });
+                      setProfileImg(null);
+                      setCoverImg(null);
+                    }}>
+                    {isUpdatingProfile ? "Updating..." : "Update"}
                   </button>
                 )}
               </div>
