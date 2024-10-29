@@ -1,6 +1,6 @@
 # ChirpUp is a free social networking site where users broadcast short posts known as chirps. These chirps can contain text, videos, photos or links
 
-![Demo App]([https://i.ibb.co/f8y9vGS/Group-82.png](https://i.ibb.co/2ZC1ShJ/ChirpUp.png))
+![Demo App](https://i.ibb.co/2ZC1ShJ/ChirpUp.png)
 
 Some Features:
 
